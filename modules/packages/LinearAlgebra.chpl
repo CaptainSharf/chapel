@@ -1309,9 +1309,6 @@ proc lu (A: [?Adom] ?eltType) {
   if Adom.rank != 2 then
     halt("Wrong rank for LU factorization");
 
-  // if Adom.shape(0) != Adom.shape(1) then
-  //   halt("LU factorization only supports square matrices");
-
   var (LU, ipiv, numSwap) = _lu(A);
   return (LU,ipiv);
 }
