@@ -1243,11 +1243,10 @@ proc trace(A: [?D] ?eltType) {
 }
 
 private proc _lu (in A: [?Adom] ?eltType) {
-  const n = Adom.shape(0);
-  const LUDom = {1..n, 1..n};
+ const (n,m) = A.shape;
 
   // TODO: Reduce memory usage
-  var L, U, LU: [LUDom] eltType;
+  var L, U: [Adom] eltType;
 
   var ipiv: [{1..n}] int = [i in {1..n}] i;
 
@@ -1269,7 +1268,7 @@ private proc _lu (in A: [?Adom] ?eltType) {
       numSwap+=1;
     }
 
-    forall k in i..n {
+    forall k in i..m {
       var sum = + reduce (L[i,..] * U[..,k]);
       U[i,k] = A[i,k] - sum;
     }
@@ -1282,7 +1281,7 @@ private proc _lu (in A: [?Adom] ?eltType) {
     }
   }
 
-  LU = L + U;
+  var LU = L + U;
   forall i in 1..n {
     LU(i,i) = U(i,i);
   }
@@ -1310,8 +1309,8 @@ proc lu (A: [?Adom] ?eltType) {
   if Adom.rank != 2 then
     halt("Wrong rank for LU factorization");
 
-  if Adom.shape(0) != Adom.shape(1) then
-    halt("LU factorization only supports square matrices");
+  // if Adom.shape(0) != Adom.shape(1) then
+  //   halt("LU factorization only supports square matrices");
 
   var (LU, ipiv, numSwap) = _lu(A);
   return (LU,ipiv);
